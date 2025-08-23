@@ -1,16 +1,14 @@
 import pandas as pd
-from connect_db import engine, metadata
+from connect_db import engine
 
 # --- CSV beolvasása pandas-szal ---
-csv_file = "test_data.csv"  #  le kell menteni igazi csv comma delimited versionbe
+csv_file = "test_data.csv"  #  le kell menteni hogy igazi csv comma delimited versionbe
 df = pd.read_csv(csv_file,encoding='utf-8',sep=',')
 
 # --- Oszlopok javítása és név tisztítása ---
 df.columns = df.columns.str.strip()  # törli a felesleges szóközöket
 
-#print(df.columns)
-
-# --- DataFrame-ek létrehozása ---
+# --- DataFrame-ek divisionok létrehozása ---
 df_divisions = df[['division_name']].drop_duplicates()  # divisions tábla, ismétlődések nélkül
 
 # --- Divisions tábla feltöltése ---
@@ -29,15 +27,12 @@ away_teams = df[['AwayTeam', 'division_name']].rename(columns={'AwayTeam': 'team
 # Egyesítés és duplikátumok eltávolítása
 all_teams = pd.concat([home_teams, away_teams]).drop_duplicates()
 
-# df_teams = df[['HomeTeam', 'division_name']].drop_duplicates().rename(columns={"HomeTeam":"team_name"})
 df_teams = all_teams.merge(divisions_df, on='division_name')
 df_teams = df_teams[['team_name', 'division_id']]  # csak team_name és division_id kell
 df_teams = df_teams.rename(columns={'id': 'division_id'})
 
 # Feltöltés a teams táblába
 df_teams.to_sql('teams', engine, if_exists='append', index=False)
-
-#todo meccsek feltoltese elott a csapatneveket atkene irni id-kra
 
 # --- CSV beolvasása pandas-szal ---
 csv_file = "test_data_ids.csv"  #  le kell menteni igazi csv comma delimited versionbe
@@ -52,4 +47,4 @@ df_matches = df[['match_date','home_team_id','away_team_id','ft_home_goals','ft_
 # --- Matches tábla feltöltése ---
 df_matches.to_sql('matches', engine, if_exists='append', index=False)
 
-print("Adatok sikeresen feltöltve a divisions és teams táblákba!")
+print("Adatok sikeresen feltöltve a táblákba!")

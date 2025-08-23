@@ -23,7 +23,6 @@ CREATE TABLE teams (
 CREATE TABLE matches (
     match_id SERIAL PRIMARY KEY,
     match_date DATE NOT NULL,
-    match_time TIME,
     home_team_id INT NOT NULL REFERENCES teams(team_id),
     away_team_id INT NOT NULL REFERENCES teams(team_id),
     ft_home_goals INT,
