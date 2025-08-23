@@ -1,10 +1,6 @@
 from sqlalchemy import Table, Column, Integer, CHAR, Date, String, ForeignKey
 from connect_db import metadata
 # --- Tábla definíciók SQLAlchemy-vel ---
-divisions = Table(
-    'divisions', metadata,
-    Column('id', Integer, primary_key=True, autoincrement=True),
-)
 
 teams = Table(
     'teams', metadata,
@@ -44,11 +40,4 @@ matches = Table(
     Column('away_yellow',Integer),
     Column('home_red',Integer),
     Column('away_red',Integer),
-)
-
-match_stats = Table(
-    'match_stats',metadata,
-    Column('stat_id',Integer, primary_key = True, autoincrement=True),
-    Column('match_id',Integer, ForeignKey("matches.match_id"), nullable=False),
-
 )

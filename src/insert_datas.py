@@ -1,5 +1,5 @@
 import pandas as pd
-from connect_db import engine
+from .connect_db import engine
 
 def load_div_and_teams():
     # --- CSV beolvasása pandas-szal ---
@@ -8,17 +8,6 @@ def load_div_and_teams():
 
     # --- Oszlopok javítása és név tisztítása ---
     df.columns = df.columns.str.strip()  # törli a felesleges szóközöket
-
-    # --- DataFrame-ek divisionok létrehozása ---
-  #  df_divisions = df[['division_name']].drop_duplicates()  # divisions tábla, ismétlődések nélkül
-
-    # --- Divisions tábla feltöltése ---
-   # df_divisions.to_sql('divisions', engine, if_exists='append', index=False)
-
-    # --- Teams tábla feltöltése ---
-    # Reláció létrehozása: division_id-t hozzárendeljük a divisions táblából
-    # Lekérjük az divisions táblát, hogy megkapjuk az id-ket
-  #  divisions_df = pd.read_sql('divisions', engine)
 
     # Home és Away csapatok összegyűjtése
     home_teams = df[['HomeTeam']].rename(columns={'HomeTeam': 'team_name'})

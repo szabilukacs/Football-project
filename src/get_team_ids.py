@@ -1,6 +1,5 @@
 import pandas as pd
-from sqlalchemy import create_engine
-from connect_db import engine
+from .connect_db import engine
 
 def change_team_names_to_ids():
     # CSV beolvasása
