@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.pyo
+*.log
+.venv/
+venv/
+env/
+.git/
+.gitignore
+.ipynb_checkpoints/
+data/**/*.parquet
+data/**/*.zip
