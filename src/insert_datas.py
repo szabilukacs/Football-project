@@ -1,6 +1,6 @@
 import pandas as pd
-from .connect_db import engine
-from .clean_data import validate_data_column_names, drop_null_values, validate_values, clean_and_validate
+from src.connect_db import conn
+from psycopg2.extras import execute_values
 
 def load_teams(df: pd.DataFrame) -> pd.DataFrame:
     
@@ -11,8 +11,18 @@ def load_teams(df: pd.DataFrame) -> pd.DataFrame:
     # Concat and drop duplicates
     df_teams = pd.concat([home_teams, away_teams]).drop_duplicates()
 
-    # Insert it to database
-    df_teams.to_sql('teams', engine, if_exists='append', index=False)
+    # Adatok beszúrása psycopg2-vel
+    cursor = conn.cursor()
+    insert_query = """
+        INSERT INTO teams (team_name)
+        VALUES (%s)
+        ON CONFLICT (team_name) DO NOTHING;
+    """
+
+    for team in df_teams['team_name']:
+        cursor.execute(insert_query, (team,))
+    
+    cursor.close()
 
 def load_matches(df: pd.DataFrame) -> pd.DataFrame:
     # Meccsek
@@ -20,4 +30,28 @@ def load_matches(df: pd.DataFrame) -> pd.DataFrame:
                      'home_target','away_target','home_fouls','away_fouls','home_corners','away_corners','home_yellow','away_yellow','home_red','away_red','division_name']]
 
     # --- Matches tábla feltöltése ---
-    df_matches.to_sql('matches', engine, if_exists='append', index=False,chunksize=5000)
+   # df_matches.to_sql('matches', engine, if_exists='append', index=False,chunksize=5000)
+
+    cursor = conn.cursor()
+    
+    # Adatok listába alakítása
+    records = df_matches.to_records(index=False)
+    values = list(records)
+
+    # INSERT query
+    insert_query = """
+        INSERT INTO matches (
+            division_name, match_date, home_team_id, away_team_id,
+            home_elo, away_elo, home_form3, home_form5, away_form3, away_form5,
+            ft_home_goals, ft_away_goals, ft_result, ht_home_goals, ht_away_goals,
+            ht_result, home_shots, away_shots, home_target, away_target,
+            home_fouls, away_fouls, home_corners, away_corners,
+            home_yellow, away_yellow, home_red, away_red
+        )
+        VALUES %s
+    """
+
+    # Batch insert
+    execute_values(cursor, insert_query, values)
+
+    cursor.close()

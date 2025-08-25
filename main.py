@@ -2,6 +2,7 @@ import pandas as pd
 from src.insert_datas import load_teams, load_matches
 from src.clean_data import clean_and_validate, change_team_names_to_ids
 from src.connect_db import check_database_if_has_data
+from src.connect_db import conn
 
 if __name__ == "__main__":
 
@@ -24,7 +25,7 @@ if __name__ == "__main__":
         load_teams(df)
         # Change team names to ids in the csv file based on the teams table
         change_team_names_to_ids(csv_file_path, csv_file_with_id_path)
-        # Load csv data
+        # Load new csv data
         df = pd.read_csv(csv_file_with_id_path,encoding='utf-8',sep=',')
         # Insert data into the matches table based on the modified csv
         load_matches(df)
@@ -33,4 +34,8 @@ if __name__ == "__main__":
     else:
         print("Datas already there")
         # todo: itt csinalni a crawlingot tovabb akkor
+        # printeket berakni lepesekre hogy sikeres stb.
+    
+    conn.commit()
+    conn.close()
     

@@ -1,14 +1,13 @@
 
 import pandas as pd
-from .connect_db import engine
 import datetime
-
+from .connect_db import conn
 
 def change_team_names_to_ids(csv_file: str, csv_file_out: str):
     # CSV beolvasása
     matches_df = pd.read_csv(csv_file)
 
-    teams_df = pd.read_sql_table('teams',engine)
+    teams_df = pd.read_sql("SELECT * FROM teams;",conn)
 
     # Csapatnév -> id mapping készítése
     team_mapping = dict(zip(teams_df['team_name'], teams_df['team_id']))

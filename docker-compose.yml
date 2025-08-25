@@ -1,4 +1,3 @@
-version: "3.9"
 services:
   db:
     image: postgres:15
@@ -8,18 +7,20 @@ services:
       POSTGRES_PASSWORD: robinson00POST
       POSTGRES_DB: Football_stats
     ports:
-      - "5432:5432"   # kívülről is eléred
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./PostgreSQL:/docker-entrypoint-initdb.d
 
   app:
     build: .
+    env_file:
+      - .env
     container_name: football-app
     depends_on:
       - db
     environment:
-      DATABASE_URL: postgresql+psycopg2://postgres:robinson00POST@db:5432/Football_stats
+      DATABASE_URL: postgresql+psycopg2://postgres:robinson00POST@football-db:5432/Football_stats
 
 volumes:
   postgres_data:
