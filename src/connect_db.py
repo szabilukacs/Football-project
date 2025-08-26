@@ -1,54 +1,78 @@
 import os
-from dotenv import load_dotenv
+import logging
 import psycopg2
-# --- PostgreSQL kapcsolat beállítása ---
+from dotenv import load_dotenv
+
+# --- Load env variables ---
 load_dotenv()
 
-db_user = os.getenv("DB_USER")
-db_pass = os.getenv("DB_PASS")
-db_host = os.getenv("DB_HOST")
-db_port = os.getenv("DB_PORT")
-db_name = os.getenv("DB_NAME")
+DB_USER = os.getenv("DB_USER")
+DB_PASS = os.getenv("DB_PASS")
+DB_HOST = os.getenv("DB_HOST")
+DB_PORT = os.getenv("DB_PORT")
+DB_NAME = os.getenv("DB_NAME")
 
-conn = psycopg2.connect(
-    database=db_name, user=db_user, 
-    password=db_pass, host=db_host, port='5432')
+CREATE_TABLES_PATH  = "PostgreSQL/Create_tables.sql"
 
-create_tables_path = "PostgreSQL/Create_tables.sql"
+# --- Setup logging ---
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s"
+)
 
-def check_database_if_has_data():
-
-    
-
-    cursor = conn.cursor()
+# --- Create global connection ---
+try:
+    conn = psycopg2.connect(
+        database=DB_NAME,
+        user=DB_USER,
+        password=DB_PASS,
+        host=DB_HOST,
+        port=DB_PORT
+    )
     conn.autocommit = True
+    logging.info("Connected to PostgreSQL database successfully.")
+except Exception as e:
+    logging.error("Database connection failed", exc_info=True)
+    raise
 
-    # Ellenőrizzük, hogy léteznek-e a táblák
-    cursor.execute("""
-        SELECT table_name
-        FROM information_schema.tables
-        WHERE table_schema = 'public';
-    """)
-    tables = {row[0] for row in cursor.fetchall()}
+def ensure_database_initialized() -> bool:
+    """
+    Ensures that the required tables (teams, matches) exist in the database.
+    If missing, creates them from the SQL script.
+    
+    Returns:
+        bool: True if tables exist and contain data, False otherwise.
+    """
 
-    expected_tables = {"teams", "matches"}
+    required_tables = {"teams", "matches"}
     has_data = True
 
-    if tables == expected_tables:
-    # Ellenőrizzük, van-e adat a táblákban
-        for table in tables:
-            cursor.execute(f"SELECT 1 FROM {table} LIMIT 1;")
-            result = cursor.fetchone()
-            if not result:
-                has_data = False
-                break
-    else:
-        # Ha hiányoznak a táblák, létrehozzuk őket
-        
-        with open(create_tables_path, "r") as f:
-            cursor.execute(f.read())
-        has_data = False
+    try:
+        with conn.cursor() as cursor:
+            # Get existing tables
+            cursor.execute("""
+                SELECT table_name
+                FROM information_schema.tables
+                WHERE table_schema = 'public';
+            """)
+            existing_tables = {row[0] for row in cursor.fetchall()}
 
-    cursor.close()
+            if existing_tables == required_tables:
+                # Check if tables have data
+                for table in required_tables:
+                    cursor.execute(f"SELECT 1 FROM {table} LIMIT 1;")
+                    if not cursor.fetchone():
+                        has_data = False
+                        break
+            else:
+                # Create missing tables
+                with open(CREATE_TABLES_PATH, "r", encoding="utf-8") as f:
+                    cursor.execute(f.read())
+                logging.info("Missing tables created from SQL script.")
+                has_data = False
+
+    except Exception as e:
+        logging.error("Error while initializing database", exc_info=True)
+        raise
 
     return has_data
