@@ -36,7 +36,7 @@ def change_team_names_to_ids(csv_file: str, csv_file_out: str) -> None:
     team_mapping = dict(zip(teams_df['team_name'], teams_df['team_id']))
 
     # Rename columns
-    matches_df = matches_df.rename(columns={"Home_Team": "home_team_id","Away_Team": "away_team_id"})
+    matches_df = matches_df.rename(columns={"home_team": "home_team_id","away_team": "away_team_id"})
 
     # HomeTeam and AwayTeam replace to IDs
     matches_df['home_team_id'] = matches_df['home_team_id'].map(team_mapping)
@@ -46,7 +46,7 @@ def change_team_names_to_ids(csv_file: str, csv_file_out: str) -> None:
     if matches_df["home_team_id"].isnull().any() or matches_df["away_team_id"].isnull().any():
         logging.warning("Some team names could not be mapped to IDs.")
 
-    # Eredmény mentése új CSV-be
+    # Save it into new csv file
     matches_df.to_csv(csv_file_out, index=False)
 
     logging.info(f"File {csv_file_out} created successfully.")
@@ -81,6 +81,10 @@ def validate_values(df: pd.DataFrame) -> pd.DataFrame:
     """
     today = datetime.date.today()
 
+    # Strip trailing spaces from team names
+    df['home_team'] = df['home_team'].str.strip()
+    df['away_team'] = df['away_team'].str.strip()
+
     # Remove negative goals
     df = df[(df['ft_home_goals'] >= 0) & (df['ft_away_goals'] >= 0)]
 
@@ -102,6 +106,9 @@ def clean_and_validate(df: pd.DataFrame) -> pd.DataFrame:
     df = validate_data_column_names(df)
     df = drop_null_values(df)
     df = validate_values(df)
+
+    # save it again
+    df.to_csv('Data/Matches.csv', index=False)
 
     logging.info("Values validated successfully.")
 

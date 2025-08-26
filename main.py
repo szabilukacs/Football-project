@@ -50,6 +50,8 @@ def main():
             # Insert matches
             load_matches(df)
             logging.info("Datas loaded inot the database succesfully!")
+
+
         else:
             logging.info("Datas already exists")
             # TODO: Add crawling for Premier League matches API
