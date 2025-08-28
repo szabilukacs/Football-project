@@ -95,3 +95,21 @@ def load_matches(df: pd.DataFrame) -> None:
         raise
     finally:
         cursor.close()
+
+def create_views(conn, sql_file="PostgreSQL/create_views.sql"):
+    try:
+        cursor = conn.cursor()
+        with open(sql_file, "r", encoding="utf-8") as f:
+            sql = f.read()
+
+        # Ez futtatja az egész fájlt egyszerre
+        cursor.execute(sql)
+
+        conn.commit()
+        logging.info("✅ Views created successfully.")
+    except Exception as e:
+        conn.rollback()
+        logging.error(f"Error creating views: {e}", exc_info=True)
+        raise
+    finally:
+        cursor.close()

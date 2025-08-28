@@ -11,7 +11,7 @@ Entry point of the ETL pipeline:
 import pandas as pd
 import logging
 
-from src.insert_datas import load_teams, load_matches
+from src.insert_datas import load_teams, load_matches, create_views
 from src.clean_data import clean_and_validate, change_team_names_to_ids
 from src.connect_db import ensure_database_initialized
 from src.connect_db import conn
@@ -51,11 +51,13 @@ def main():
             load_matches(df)
             logging.info("Datas loaded inot the database succesfully!")
 
+            # ---> View-k létrehozása
+            create_views(conn)
+            # TODO: SELECT * FROM f_team_points_trend('Arsenal'); ezeket meg gpt bol berakni
+            # Meghivni 10 csapatra pl s annyi
 
         else:
-            logging.info("Datas already exists")
-            # TODO: Add crawling for Premier League matches API
-        
+            logging.info("Datas already exists")        
         conn.close()
     except Exception as e:
         logging.error("ETL process failed",exc_info=True)

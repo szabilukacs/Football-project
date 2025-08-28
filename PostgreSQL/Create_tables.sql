@@ -1,16 +1,18 @@
 
-DROP TABLE IF EXISTS matches;
-DROP TABLE IF EXISTS teams;
--- DROP TABLE IF EXISTS divisions;
+-- 1. Először töröljük a view-kat
+DROP VIEW IF EXISTS 
+    avg_goals_per_team,
+    v_team_scoring_efficiency,
+    v_team_discipline,
+    v_team_shooting_efficiency,
+    v_team_aggressiveness,
+    v_team_goal_difference,
+    v_team_elo_trend
+CASCADE;
 
--- ezt kesobb majd csak
-/*
--- 0. Diviziok táblája
-CREATE TABLE divisions (
-    division_id VARCHAR(5) PRIMARY KEY,
-    division_name VARCHAR(50) NOT NULL UNIQUE -- ide majd megadni hosszan is masik rtekben a nevet
-);
-*/
+-- 2. Ezután a táblákat
+DROP TABLE IF EXISTS matches CASCADE;
+DROP TABLE IF EXISTS teams CASCADE;
 
 -- 1. Csapatok táblája
 CREATE TABLE teams (
