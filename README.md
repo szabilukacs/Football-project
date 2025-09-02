@@ -19,16 +19,16 @@ Data source: Gábor, A. (2025). Club Football Match Data. Retrieved from https:/
 
 
 ## 📂 Project Structure
-Football-Stats/
-│-- Data/ # Raw and processed CSV files
-│-- PostgreSQL/ # SQL scripts, schema definitions
-│-- Power-BI/ # Power BI dashboards and reports
-│-- src/ # Helper modules (cleaning, ETL functions)
-│-- .env # Environment variables (DB credentials etc.) You have to create it
-│-- docker-compose.yml # Docker setup for PostgreSQL
-│-- Dockerfile # Docker image build for Python environment
-│-- main.py # Main pipeline script
-│-- requirements.txt # Python dependencies
+Football-Stats/  
+│-- Data/ # Raw and processed CSV files  
+│-- PostgreSQL/ # SQL scripts, schema definitions  
+│-- Power-BI/ # Power BI dashboards and reports  
+│-- src/ # Helper modules (cleaning, ETL functions)  
+│-- .env # Environment variables (DB credentials etc.) You have to create it  
+│-- docker-compose.yml # Docker setup for PostgreSQL  
+│-- Dockerfile # Docker image build for Python environment  
+│-- main.py # Main pipeline script  
+│-- requirements.txt # Python dependencies  
 
 ---
 
