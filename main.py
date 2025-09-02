@@ -53,8 +53,6 @@ def main():
 
             # ---> View-k létrehozása
             create_views(conn)
-            # TODO: SELECT * FROM f_team_points_trend('Arsenal'); ezeket meg gpt bol berakni
-            # Meghivni 10 csapatra pl s annyi
 
         else:
             logging.info("Datas already exists")        
