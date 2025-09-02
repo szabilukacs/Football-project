@@ -50,11 +50,6 @@ git clone https://github.com/szabilukacs/football-stats.git
 cd football-stats
 ```
 
-Install dependencies
-```bash
-pip install -r requirements.txt
-```
-
 Create your .env file
 ```bash
 DB_USER = ""
@@ -64,15 +59,6 @@ DB_PORT = ""
 DB_NAME = ""
 ```
 
-Start PostgreSQL with Docker
-```bash
-docker-compose up -d
-```
-Run the pipeline
-```bash
-python main.py
-```
-
 The script will:  
 1. Load raw CSV data.  
 2. Clean & validate it.  
@@ -80,6 +66,3 @@ The script will:
 4. Create analysis-friendly views.  
 
 After running, open **Power BI** (or another BI tool) to the PostgreSQL database and start building dashboards.  
-
-
-
